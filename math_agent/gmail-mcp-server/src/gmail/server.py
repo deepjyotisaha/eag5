@@ -9,6 +9,7 @@ from email.header import decode_header
 from base64 import urlsafe_b64decode
 from email import message_from_bytes
 import webbrowser
+from bs4 import BeautifulSoup
 
 from mcp.server.models import InitializationOptions
 import mcp.types as types
@@ -156,6 +157,44 @@ class GmailService:
         profile = self.service.users().getProfile(userId='me').execute()
         user_email = profile.get('emailAddress', '')
         return user_email
+
+    '''async def send_email(self, recipient_id: str, subject: str, message: str,) -> dict:
+        """Creates and sends an email message with HTML content"""
+        try:
+            # Create a MIMEMultipart message
+            from email.mime.multipart import MIMEMultipart
+            from email.mime.text import MIMEText
+            
+            message_obj = MIMEMultipart('alternative')
+            message_obj['To'] = recipient_id
+            message_obj['From'] = self.user_email
+            message_obj['Subject'] = subject
+
+            # Create plain text version by stripping HTML
+            from bs4 import BeautifulSoup
+            soup = BeautifulSoup(message, 'html.parser')
+            plain_text = soup.get_text(separator='\n')
+            
+            # Attach both plain text and HTML versions
+            part1 = MIMEText(plain_text, 'plain')
+            part2 = MIMEText(message, 'html')
+            
+            message_obj.attach(part1)
+            message_obj.attach(part2)
+
+            # Encode the message
+            encoded_message = base64.urlsafe_b64encode(message_obj.as_bytes()).decode()
+            create_message = {'raw': encoded_message}
+            
+            # Send the email
+            send_message = await asyncio.to_thread(
+                self.service.users().messages().send(userId="me", body=create_message).execute
+            )
+            logger.info(f"Message sent: {send_message['id']}")
+            return {"status": "success", "message_id": send_message["id"]}
+        except Exception as error:
+            logger.error(f"Error sending email: {str(error)}")
+            return {"status": "error", "error_message": str(error)}'''
     
     async def send_email(self, recipient_id: str, subject: str, message: str,) -> dict:
         """Creates and sends an email message"""
@@ -177,7 +216,7 @@ class GmailService:
             return {"status": "success", "message_id": send_message["id"]}
         except HttpError as error:
             return {"status": "error", "error_message": str(error)}
-
+            
     async def open_email(self, email_id: str) -> str:
         """Opens email in browser given ID."""
         try:

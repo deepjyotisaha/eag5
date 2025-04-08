@@ -108,7 +108,7 @@ async def main():
                 logging.info("Session created, initializing...")
                 await math_session.initialize()
                 await gmail_session.initialize()
-                #time.sleep(0.5)
+                time.sleep(0.5)
                 
                 # Get available tools
                 logging.info("Requesting tool list...")
