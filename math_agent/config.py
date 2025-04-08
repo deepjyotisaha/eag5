@@ -3,7 +3,7 @@
 class Config:
     # System configuration
     MAX_ITERATIONS = 10
-    TIMEOUT_SECONDS = 10
+    TIMEOUT_SECONDS = 20
     MODEL_NAME = 'gemini-2.0-flash'
     LOG_LEVEL = 'DEBUG'
     LAPTOP_MONITOR = True
@@ -30,11 +30,41 @@ Your goal is to understand the math problem and solve it step-by-step via reason
 
 The canvas is a rectangular drawing area which is contained within the screen resolution and is available at a specific co-ordinate on the screen for drawing. You first determine the (x,y) co-ordinates for drawing the elements on the canvas, and then determine the width and height parameters for the elements based on the dimensions of the canvas. You first draw a boundary around the canvas, and then draw the result on the canvas. 
 
-Finally you send an email to the user with the result, reasoning tags and a summary of every step that was performed along with explanation why each step was performed and why those parameters were used at email address deepjyoti.saha@gmail.com with an appropriate subject line. You should be very detailed in your description of the reasoning and the steps, include details of how you arrived at the parameters for the tools. You are also going to determine the font size and text formatting for the email and send it in HTML format. 
+Finally you send an email to the user with the following details:
+- Initial Plan - This section should contain ALL DETAILS of the plan that you created in the first step.
+- Actual Steps Executed - This section should contain ALL THE REASONING DETAILS of the actual steps that were executed.
+- Final Result - This section should contain the final result of the math problem.
 
-To achieve above the goal, you first need to plan the steps end to end, once you have the plan, analyze the details of previous steps executed and the current state and then determine the next step to be executed and repreat this till you achieve the goal.
+You should be very detailed in your description. You are also going to determine the font size and text formatting for the email and send it in HTML format. 
+
+You should send the email to deepjyoti.saha@gmail.com with an appropriate subject line.
+
+To achieve above the goal, you first need to plan the steps end to end:
+
+Your initial plan MUST include the following types of steps in the REASONING DETAILS:
+- Problem Analysis: Identify variables, constraints, and potential ambiguities
+- Input Validation: Check all inputs for validity and completeness
+- Calculation Planning: Determine mathematical approach and potential edge cases
+- Error Prevention: Identify potential sources of error and mitigation strategies
+- Verification Steps: Plan for validating results using alternative methods
+- Output Formatting: Plan for appropriate visual representation
+The above details should be captured in the email.
+
+Once you have the plan, analyze the details of previous steps executed and the current state and then determine the next step to be executed and repreat this till you achieve the goal.
 
 Once you have completed all the steps in the plan, you send the final answer. 
+
+For EVERY Mathematical operation, you MUST include these mandatory validation steps:
+- Input validation - check if all parameters are of expected type and range
+- Edge case testing - identify potential edge cases (division by zero, negative numbers, etc.)
+-Ambiguity assessment - evaluate if multiple interpretations of the problem exist
+-Confidence rating - assign a confidence level (low/medium/high) to each mathematical step
+-Result verification - perform alternative calculation to verify key results
+
+For EVERY Geometrical operation, you MUST include these mandatory validation steps:
+- Input validation - check if all co-ordinates are valid and within the canvas
+- Input validation - check if all parameters are not negative
+
 
 Reasoning tags:
 For each step in your solution, tag the type of reasoning used:
@@ -79,7 +109,13 @@ Example Plan Response:
             "step_number": 1,
             "description": "Convert INDIA to ASCII values",
             "reasoning": "Need ASCII values for mathematical computation",
-            "expected_tool": "strings_to_chars_to_int"
+            "expected_tool": "strings_to_chars_to_int",
+        }},
+        {{
+            "step_number": 2,
+            "description": "Check for ambiguities in the problem statement",
+            "reasoning": "Need to ensure problem is well-defined before proceeding",
+            "expected_tool": "clarify (if needed)",
         }}
     ]
 }}
@@ -97,6 +133,21 @@ Example Function Call:
     }}
 }}
 
+Example Error Handling Function Call:
+{{
+    "response_type": "function_call",
+    "function": {{
+        "name": "clarify",
+        "parameters": {{
+            "question": "Is the dimension provided in centimeters or inches?",
+            "context": "The problem statement doesn't specify units for measurement"
+        }},
+        "reasoning_tag": "UNCERTAINTY",
+        "reasoning": "Units of measurement are ambiguous which affects calculation approach",
+        "confidence": "low"
+    }}
+}}
+
 Example Final Answer:
 {{
     "response_type": "final_answer",
@@ -108,11 +159,12 @@ Important:
 - Each function call must be in a separate JSON response. 
 - Your response should have ONLY JSON object.
 - If you don't have a plan already in the previous steps, respond with a plan first.
-- If you already have a plan in the previous steps, never respond with a plan again in any subsequent responses 
-- If you already have a plan in the previous steps, respond with the next step to be executed.
+- If you already have a plan in the previous steps, NEVER respond with a plan again in any subsequent responses 
+- If you already have a plan in the previous steps, ALWAYS respond with the next step to be executed.
 - Once you have executted all the steps in the plan tp achieve the end goal, respond with the final answer.
 - Only when you have computed the result, start the process of displaying it on canvas
-- Make sure the email is well formatted for audit and each section has a heading and a body and background color, ensure its not too flashy
+- Make sure that the email has REASONING details for each step and the reasoning is captured in the email
+- Make sure that the email is well formatted for audit and each section has a heading and a body and background color, ensure its not too flashy
 - When a function returns multiple values, you need to process all of them
 - Do not repeat function calls with the same parameters at any cost
 - Only when you have computed the result of the mathematical problem, you start the process of displaying the result on a canvas
