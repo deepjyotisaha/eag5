@@ -12,7 +12,6 @@ import sys
 from datetime import datetime
 from config import Config
 import time
-import json
 
 # Configure logging at the start of your file, after the imports
 logging.basicConfig(
@@ -48,15 +47,6 @@ last_response = None
 iteration = 0
 iteration_response = []
 
-class ExecutionHistory:
-    def __init__(self):
-        self.plan = None
-        self.steps = []
-        self.final_answer = None
-        self.user_query = None
-
-execution_history = ExecutionHistory()
-
 async def generate_with_timeout(prompt, timeout=Config.TIMEOUT_SECONDS):
     """Generate content with a timeout"""
     logging.info("Starting LLM generation...")
@@ -87,9 +77,6 @@ def reset_state():
     last_response = None
     iteration = 0
     iteration_response = []
-    
-    # Reset execution history
-    execution_history = ExecutionHistory()
 
 
 async def main():
@@ -190,19 +177,8 @@ async def main():
                 
                 logging.info("Created system prompt...")
                 
-                execution_history.user_query = Config.DEFAULT_QUERIES["ascii_sum"]
-                #system_prompt = Config.SYSTEM_PROMPT.format(tools_description=tools_description, execution_history=execution_history)
-
-                #logging.info("Generating Plan...")
-                #plan_query = Config.PLAN_QUERY
-                #plan_prompt = f"{system_prompt}\n\nQuery: {plan_query}"
-                #logging.debug(f"Plan prompt: {plan_prompt}")
-
-                #response = await generate_with_timeout(prompt)
-                #response_text = response.text.strip()
-                #logging.info(f"LLM Response for Plan: {response_text}")
-
-
+                system_prompt = Config.SYSTEM_PROMPT.format(tools_description=tools_description)
+                query = Config.DEFAULT_QUERIES["ascii_sum"]
 
                 logging.info("Starting iteration loop...")
                 #logging.debug(f"Query: {query}")
@@ -213,114 +189,146 @@ async def main():
                 
                 while iteration < max_iterations:
                     logging.info(f"\n--- Iteration {iteration + 1} ---")
-                    
-                    #if last_response is None:
-                    #    current_query = query
-                    #else:
-                        #current_query = current_query + "\n\n" + " ".join(iteration_response)
-                        #current_query = current_query + "  What should I do next?"
+                    if last_response is None:
+                        current_query = query
+                    else:
+                        current_query = current_query + "\n\n" + " ".join(iteration_response)
+                        current_query = current_query + "  What should I do next?"
 
                     # Get model's response with timeout
                     logging.info("Preparing to generate LLM response...")
-                    #prompt = f"{system_prompt}\n\nQuery: {current_query}"
-                    #prompt = f"{system_prompt}\n\nQuery: {execution_history.user_query}"
-                    system_prompt = Config.SYSTEM_PROMPT.format(tools_description=tools_description, execution_history=execution_history)
-                    prompt = system_prompt
+                    prompt = f"{system_prompt}\n\nQuery: {current_query}"
                     #logging.debug(f"Prompt: {prompt}")
                     try:
                         response = await generate_with_timeout(prompt)
                         response_text = response.text.strip()
                         logging.info(f"LLM Response: {response_text}")
-                        #logging.info(f"############# Going to parse JSON ##############")
                         
-                        # Parse JSON response
-                        try:
-                            # Clean up the response text
-                            cleaned_response = response_text
-                            if cleaned_response.startswith("```json"):
-                                cleaned_response = cleaned_response[7:]  # Remove ```json prefix
-                            if cleaned_response.endswith("```"):
-                                cleaned_response = cleaned_response[:-3]  # Remove ``` suffix
-                            cleaned_response = cleaned_response.strip()
-                            
-                            #logging.info(f"Cleaned response for parsing: {cleaned_response}")
-                            response_json = json.loads(cleaned_response)
-                            response_type = response_json.get("response_type")
-                            
-                            if response_type == "plan":
-                                # Log the plan
-                                logging.info("######################### Received execution plan: #########################")
-                                for step in response_json.get("steps", []):
-                                    logging.info(f"Step {step['step_number']}: {step['description']}")
-                                    logging.info(f"Reasoning: {step['reasoning']}")
-                                    logging.info(f"Expected tool: {step['expected_tool']}")
-                                execution_history.plan = response_json
-                                #logging.info(f"######################### Plan stored in execution history: {json.dumps(execution_history.plan, indent=2)} #########################")
-                                logging.info("######################### End of execution plan: #########################")
-                                #continue  # Move to next iteration for actual execution
-                                
-                            elif response_type == "function_call":
-                                # Extract function call details
-                                function_info = response_json.get("function", {})
-                                func_name = function_info.get("name")
-                                parameters = function_info.get("parameters", {})
-                                reasoning_tag = function_info.get("reasoning_tag")
-                                reasoning = function_info.get("reasoning")
-                                
-                                logging.info(f"\nDEBUG: Function call: {func_name}")
-                                logging.info(f"DEBUG: Parameters: {parameters}")
-                                logging.info(f"DEBUG: Reasoning tag: {reasoning_tag}")
-                                logging.info(f"DEBUG: Reasoning: {reasoning}")
-                                
-                                # Find the matching tool
-                                tool = next((t for t in tools if t.name == func_name), None)
-                                if not tool:
-                                    raise ValueError(f"Unknown tool: {func_name}")
-                                    
-                                # Get the correct session
-                                session = tool.server_session
-                                if not session:
-                                    raise ValueError(f"No session found for tool: {func_name}")
-                                    
-                                # Execute the tool
-                                result = await session.call_tool(func_name, arguments=parameters)
-                                
-                                # Process result
-                                if hasattr(result, 'content'):
-                                    if isinstance(result.content, list):
-                                        iteration_result = [
-                                            item.text if hasattr(item, 'text') else str(item)
-                                            for item in result.content
-                                        ]
-                                    else:
-                                        iteration_result = str(result.content)
-                                else:
-                                    iteration_result = str(result)
-                                    
-                                # Store execution details
-                                execution_history.steps.append({
-                                    "step_number": len(execution_history.steps) + 1,
-                                    "function": func_name,
-                                    "parameters": parameters,
-                                    "reasoning_tag": reasoning_tag,
-                                    "reasoning": reasoning,
-                                    "result": iteration_result
-                                })
-                                
-                            elif response_type == "final_answer":
-                                logging.info("\n=== Agent Execution Complete ===")
-                                logging.info(f"Final Result: {response_json.get('result')}")
-                                logging.info(f"Summary: {response_json.get('summary')}")
-                                execution_history.final_answer = response_json
+                        # Find the FUNCTION_CALL line in the response
+                        for line in response_text.split('\n'):
+                            line = line.strip()
+                            if line.startswith("FUNCTION_CALL:"):
+                                response_text = line
                                 break
-                                
-                        except json.JSONDecodeError:
-                            logging.error("Failed to parse JSON response")
-                            break
-
+                        
                     except Exception as e:
                         logging.error(f"Failed to get LLM response: {e}")
                         break
+
+
+                    if response_text.startswith("FUNCTION_CALL:"):
+                        _, function_info = response_text.split(":", 1)
+                            # Special handling for function calls with HTML content
+                        if '<!DOCTYPE html>' in function_info:
+                            # Split only up to the HTML content
+                            html_start = function_info.find('<!DOCTYPE html>')
+                            pre_html = function_info[:html_start].strip()
+                            html_content = function_info[html_start:]
+                            
+                            # Split the non-HTML part
+                            pre_html_parts = [p.strip() for p in pre_html.split('|')]
+                            func_name = pre_html_parts[0]
+                            params = pre_html_parts[1:] + [html_content]  # Add HTML content as the last parameter
+                        else:
+                            # Regular parameter handling
+                            parts = [p.strip() for p in function_info.split("|")]
+                            func_name, params = parts[0], parts[1:]
+                        #parts = [p.strip() for p in function_info.split("|")]
+                        #func_name, params = parts[0], parts[1:]
+                        
+                        logging.info(f"\nDEBUG: Raw function info: {function_info}")
+                        logging.info(f"DEBUG: Split parts: {parts}")
+                        logging.info(f"DEBUG: Function name: {func_name}")
+                        logging.info(f"DEBUG: Raw parameters: {params}")
+                        
+                        try:
+                            # Find the matching tool to get its input schema
+                            tool = next((t for t in tools if t.name == func_name), None)
+                            if not tool:
+                                logging.info(f"DEBUG: Available tools: {[t.name for t in tools]}")
+                                raise ValueError(f"Unknown tool: {func_name}")
+
+                            logging.info(f"DEBUG: Found tool: {tool.name}")
+                            logging.info(f"DEBUG: Tool schema: {tool.inputSchema}")
+
+                            # Get the correct session from the tool
+                            session = tool.server_session
+                            if not session:
+                                raise ValueError(f"No session found for tool: {func_name}")
+
+                            # Prepare arguments according to the tool's input schema
+                            arguments = {}
+                            schema_properties = tool.inputSchema.get('properties', {})
+                            logging.info(f"DEBUG: Schema properties: {schema_properties}")
+
+                            for param_name, param_info in schema_properties.items():
+                                if not params:  # Check if we have enough parameters
+                                    raise ValueError(f"Not enough parameters provided for {func_name}")
+                                    
+                                value = params.pop(0)  # Get and remove the first parameter
+                                param_type = param_info.get('type', 'string')
+                                
+                                logging.info(f"DEBUG: Converting parameter {param_name} with value {value} to type {param_type}")
+                                
+                                # Convert the value to the correct type based on the schema
+                                if param_type == 'integer':
+                                    arguments[param_name] = int(value)
+                                elif param_type == 'number':
+                                    arguments[param_name] = float(value)
+                                elif param_type == 'array':
+                                    # Handle array input
+                                    if isinstance(value, str):
+                                        value = value.strip('[]').split(',')
+                                    arguments[param_name] = [int(x.strip()) for x in value]
+                                else:
+                                    arguments[param_name] = str(value)
+
+                            logging.info(f"DEBUG: Final arguments: {arguments}")
+                            logging.info(f"DEBUG: Calling tool {func_name}")
+                            
+                            #result = await tools.server_session.call_tool(func_name, arguments=arguments)
+                            result = await session.call_tool(func_name, arguments=arguments)
+                            logging.info(f"DEBUG: Raw result: {result}")
+                            
+                            # Get the full result content
+                            if hasattr(result, 'content'):
+                                logging.info(f"DEBUG: Result has content attribute")
+                                # Handle multiple content items
+                                if isinstance(result.content, list):
+                                    iteration_result = [
+                                        item.text if hasattr(item, 'text') else str(item)
+                                        for item in result.content
+                                    ]
+                                else:
+                                    iteration_result = str(result.content)
+                            else:
+                                logging.info(f"DEBUG: Result has no content attribute")
+                                iteration_result = str(result)
+                                
+                            logging.info(f"DEBUG: Final iteration result: {iteration_result}")
+                            
+                            # Format the response based on result type
+                            if isinstance(iteration_result, list):
+                                result_str = f"[{', '.join(iteration_result)}]"
+                            else:
+                                result_str = str(iteration_result)
+                            
+                            iteration_response.append(
+                                f"In the {iteration + 1} iteration you called {func_name} with {arguments} parameters, "
+                                f"and the function returned {result_str}."
+                            )
+                            last_response = iteration_result
+
+                        except Exception as e:
+                            logging.error(f"DEBUG: Error details: {str(e)}")
+                            logging.error(f"DEBUG: Error type: {type(e)}")
+                            import traceback
+                            traceback.print_exc()
+                            iteration_response.append(f"Error in iteration {iteration + 1}: {str(e)}")
+                            break
+
+                    elif response_text.startswith("FINAL_ANSWER:"):
+                        logging.info("\n=== Agent Execution Complete ===")
 
                     iteration += 1
 

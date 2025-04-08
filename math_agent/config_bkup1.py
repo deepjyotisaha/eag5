@@ -2,7 +2,7 @@
 
 class Config:
     # System configuration
-    MAX_ITERATIONS = 10
+    MAX_ITERATIONS = 8
     TIMEOUT_SECONDS = 10
     MODEL_NAME = 'gemini-2.0-flash'
     LOG_LEVEL = 'DEBUG'
@@ -32,10 +32,6 @@ The canvas is a rectangular drawing area which is contained within the screen re
 
 Finally you send an email to the user with the result and a summary of every step that was performed along with explanation why each step was performed and why those parameters were used at email address deepjyoti.saha@gmail.com with an appropriate subject line. You are also going to determine the font size and text formatting for the email and send it in HTML format.
 
-To achieve above the goal, you first need to plan the steps end to end, once you have the plan, plan the next step to be executed by analyzing the result of each of the previous steps and repreat this till you achieve the goal.
-
-Once you have with all the steps in the plan, you send the final answer. 
-
 Reasoning tags (include in email):
 For each step in your solution, tag the type of reasoning used:
 - [ARITHMETIC]: Basic mathematical operations
@@ -54,14 +50,6 @@ Error handling and uncertainty:
 - When facing uncertainty in any step, assign a confidence level (low/medium/high) and document your reasoning
 
 Context:
-Current Execution State:
-{{
-    "user_query": "{execution_history.user_query}",
-    "execution_plan": {execution_history.plan},
-    "executed_steps": {execution_history.steps},
-    "final_answer": {execution_history.final_answer}
-}}
-
 You have access to the following types of tools::
 1. Mathematical tools: These are the tools that you use to solve the mathematical problem.
 2. Canvas tools: These are the tools that you use to draw on the canvas.
@@ -70,51 +58,16 @@ You have access to the following types of tools::
 Available tools:
 {tools_description}
 
-You must respond with EXACTLY ONE response_type per response (no additional text):
-Example Plan Response:
-{{
-    "response_type": "plan",
-    "steps": [
-        {{
-            "step_number": 1,
-            "description": "Convert INDIA to ASCII values",
-            "reasoning": "Need ASCII values for mathematical computation",
-            "expected_tool": "strings_to_chars_to_int"
-        }}
-    ]
-}}
-
-Example Function Call:
-{{
-    "response_type": "function_call",
-    "function": {{
-        "name": "strings_to_chars_to_int",
-        "parameters": {{
-            "string": "INDIA"
-        }},
-        "reasoning_tag": "ARITHMETIC",
-        "reasoning": "Converting characters to ASCII values for calculation"
-    }}
-}}
-
-Example Final Answer:
-{{
-    "response_type": "final_answer",
-    "result": "42",
-    "summary": "Completed all calculations and displayed result"
-}}
+You must respond with EXACTLY ONE line in one of these formats (no additional text):
+1. For function calls:
+   FUNCTION_CALL: function_name|param1|param2|...
+   
+2. For final answers:
+   FINAL_ANSWER: [number]
 
 Important:
-- Each function call must be in a separate JSON response. 
-- Your response should have ONLY JSON object.
-- If you don't have a plan already, respond with a plan first.
-- If you already have a plan, never respond with a plan again, respond with the next step to be executed.
-- Once you have executted all the steps in the plan, respond with the final answer.
-- Only give final_answer when you have completed all necessary steps in your plan to achieve the end goal
-- Only when you have computed the result, start the process of displaying it on canvas
-- Your co-ordinates for drawing should be calculated based on canvas dimensions
-- Make sure the email is well formatted for audit
 - When a function returns multiple values, you need to process all of them
+- Only give FINAL_ANSWER when you have completed all necessary calculations
 - Do not repeat function calls with the same parameters at any cost
 - Only when you have computed the result of the mathematical problem, you start the process of displaying the result on a canvas
 - The (x,y) co-ordinates for drawing the elements on the canvas should be calculated with respect to the resolution of the screen, and should be within the position of the canvas on the screen.
@@ -123,8 +76,15 @@ Important:
 - The boundary should be smaller than the canvas.
 - Dont add () to the function names, just use the function name as it is.
 
+Examples:
+- FUNCTION_CALL: add|5|3
+- FUNCTION_CALL: strings_to_chars_to_int|INDIA
+- FUNCTION_CALL: draw_rectangle|100|100|300|300
+- FUNCTION_CALL: send_email|deepjyoti.saha@gmail.com|Result is ready
+- FINAL_ANSWER: [42]
+
 DO NOT include any explanations or additional text.
-"""
+Your entire response should be a single line starting with either FUNCTION_CALL: or FINAL_ANSWER:"""
 
     # Default queries
     DEFAULT_QUERIES = {
