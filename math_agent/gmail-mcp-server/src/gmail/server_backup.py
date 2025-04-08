@@ -10,8 +10,6 @@ from base64 import urlsafe_b64decode
 from email import message_from_bytes
 import webbrowser
 from bs4 import BeautifulSoup
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 
 from mcp.server.models import InitializationOptions
 import mcp.types as types
@@ -161,29 +159,14 @@ class GmailService:
         return user_email
     
     async def send_email(self, recipient_id: str, subject: str, message: str,) -> dict:
-        """Creates and sends an email message with HTML content"""
+        """Creates and sends an email message"""
         try:
-            # Create message container - the correct MIME type is multipart/alternative.
-            from email.mime.multipart import MIMEMultipart
-            from email.mime.text import MIMEText
+            message_obj = EmailMessage()
+            message_obj.set_content(message)
             
-            message_obj = MIMEMultipart('alternative')
             message_obj['To'] = recipient_id
             message_obj['From'] = self.user_email
             message_obj['Subject'] = subject
-            
-            # Create a plain text version of the HTML content
-            soup = BeautifulSoup(message, 'html.parser')
-            text_content = soup.get_text(separator='\n\n')
-            
-            # Record both plain-text and HTML versions
-            part1 = MIMEText(text_content, 'plain', 'utf-8')
-            part2 = MIMEText(message, 'html', 'utf-8')
-
-            # Attach parts into message container
-            # According to RFC 2046, the last part of a multipart message is best and preferred
-            message_obj.attach(part1)
-            message_obj.attach(part2)
 
             encoded_message = base64.urlsafe_b64encode(message_obj.as_bytes()).decode()
             create_message = {'raw': encoded_message}
@@ -193,8 +176,7 @@ class GmailService:
             )
             logger.info(f"Message sent: {send_message['id']}")
             return {"status": "success", "message_id": send_message["id"]}
-        except Exception as error:
-            logger.error(f"Error sending email: {str(error)}")
+        except HttpError as error:
             return {"status": "error", "error_message": str(error)}
             
     async def open_email(self, email_id: str) -> str:
