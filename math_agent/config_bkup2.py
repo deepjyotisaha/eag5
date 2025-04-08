@@ -107,9 +107,9 @@ Example Final Answer:
 Important:
 - Each function call must be in a separate JSON response. 
 - Your response should have ONLY JSON object.
-- If you don't have a plan already in the previous steps, respond with a plan first.
-- If you already have a plan in the previous steps, never respond with a plan again in any subsequent responses 
-- If you already have a plan in the previous steps, respond with the next step to be executed.
+- If you don't have a plan already, respond with a plan first.
+- If you already have a plan, never respond with a plan again in any subsequent responses 
+- If you have a plan, respond with the next step to be executed.
 - Once you have executted all the steps in the plan tp achieve the end goal, respond with the final answer.
 - Only when you have computed the result, start the process of displaying it on canvas
 - Make sure the email is well formatted for audit and each section has a heading and a body and background color, ensure its not too flashy

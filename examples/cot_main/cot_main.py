@@ -129,13 +129,13 @@ Assistant: FINAL_ANSWER: [20]"""
                         
                         if func_name == "show_reasoning":
                             steps = eval(parts[1])
-                            #logging.info(f"Showing reasoning: {steps}")
+                            logging.info(f"Showing reasoning: {steps}")
                             await session.call_tool("show_reasoning", arguments={"steps": steps})
                             prompt += f"\nUser: Next step?"
                             
                         elif func_name == "calculate":
                             expression = parts[1]
-                            #logging.info(f"Calculating: {expression}")
+                            logging.info(f"Calculating: {expression}")
                             calc_result = await session.call_tool("calculate", arguments={"expression": expression})
                             if calc_result.content:
                                 value = calc_result.content[0].text
@@ -144,7 +144,7 @@ Assistant: FINAL_ANSWER: [20]"""
                                 
                         elif func_name == "verify":
                             expression, expected = parts[1], float(parts[2])
-                            #logging.info(f"Verifying: {expression} with expected: {expected}")
+                            logging.info(f"Verifying: {expression} with expected: {expected}")
                             await session.call_tool("verify", arguments={
                                 "expression": expression,
                                 "expected": expected

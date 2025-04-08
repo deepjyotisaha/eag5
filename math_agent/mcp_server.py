@@ -13,6 +13,9 @@ import win32con
 import time
 from win32api import GetSystemMetrics
 import logging
+import json
+from datetime import datetime
+from typing import List, Dict, Union, Optional
 from config import Config
 
 # Configure logging at the start of your file
@@ -671,6 +674,110 @@ def debug_error(error: str) -> list[base.Message]:
         base.AssistantMessage("I'll help debug that. What have you tried so far?"),
     ]
 
+# Add to mcp_server.py
+
+@mcp.prompt()
+async def clarify(question: str) -> str:
+    """
+    Request clarification about ambiguous aspects of the problem.
+    Args:
+        question: The specific question needing clarification
+    Returns:
+        str: Acknowledgment that clarification is needed
+    """
+    logging.info(f"[CLARIFICATION REQUEST] Question: {question}")
+    return f"Clarification needed: {question}"
+
+@mcp.prompt()
+async def report_error(tool_name: str, error_description: str, alternative_approach: str) -> str:
+    """
+    Report an error encountered during execution and suggest alternatives.
+    Args:
+        tool_name: Name of the tool that failed
+        error_description: Description of the error
+        alternative_approach: Suggested alternative approach
+    Returns:
+        str: Error report and alternative suggestion
+    """
+    error_report = {
+        "failed_tool": tool_name,
+        "error": error_description,
+        "alternative": alternative_approach,
+        "timestamp": datetime.now().isoformat()
+    }
+    logging.info(f"[ERROR REPORT] Tool: {tool_name}")
+    logging.info(f"[ERROR REPORT] Description: {error_description}")
+    logging.info(f"[ERROR REPORT] Alternative: {alternative_approach}")
+    logging.info(f"[ERROR REPORT] Full Report: {json.dumps(error_report, indent=2)}")
+    return json.dumps(error_report)
+
+@mcp.prompt()
+async def escalate(reason: str, possible_alternatives: list[str]) -> str:
+    """
+    Escalate an unsolvable problem with available tools.
+    Args:
+        reason: Why the problem cannot be solved with current tools
+        possible_alternatives: List of potential alternative approaches
+    Returns:
+        str: Escalation report
+    """
+    escalation_report = {
+        "reason": reason,
+        "alternatives": possible_alternatives,
+        "timestamp": datetime.now().isoformat()
+    }
+    logging.info(f"[ESCALATION] Reason: {reason}")
+    logging.info(f"[ESCALATION] Alternatives: {', '.join(possible_alternatives)}")
+    logging.info(f"[ESCALATION] Full Report: {json.dumps(escalation_report, indent=2)}")
+    return json.dumps(escalation_report)
+
+@mcp.prompt()
+async def verify_calculation(original_result: float, verification_method: str) -> dict:
+    """
+    Verify a calculation using an alternative method.
+    Args:
+        original_result: The result to verify
+        verification_method: Description of the alternative method
+    Returns:
+        dict: Verification results including confidence level
+    """
+    logging.info(f"[VERIFICATION] Original Result: {original_result}")
+    logging.info(f"[VERIFICATION] Method: {verification_method}")
+    
+    # Implement verification logic here
+    verification_result = {
+        "original_result": original_result,
+        "verification_method": verification_method,
+        "verified": True,  # or False based on verification
+        "confidence_level": "high"  # low/medium/high
+    }
+    
+    logging.info(f"[VERIFICATION] Result: {json.dumps(verification_result, indent=2)}")
+    return verification_result
+
+@mcp.prompt()
+async def log_uncertainty(step_description: str, confidence_level: str, reasoning: str) -> str:
+    """
+    Log when there's uncertainty in a step.
+    Args:
+        step_description: Description of the uncertain step
+        confidence_level: low/medium/high
+        reasoning: Explanation of the uncertainty
+    Returns:
+        str: Uncertainty log entry
+    """
+    uncertainty_log = {
+        "step": step_description,
+        "confidence": confidence_level,
+        "reasoning": reasoning,
+        "timestamp": datetime.now().isoformat()
+    }
+    logging.info(f"[UNCERTAINTY] Step: {step_description}")
+    logging.info(f"[UNCERTAINTY] Confidence Level: {confidence_level}")
+    logging.info(f"[UNCERTAINTY] Reasoning: {reasoning}")
+    logging.info(f"[UNCERTAINTY] Full Log: {json.dumps(uncertainty_log, indent=2)}")
+    return json.dumps(uncertainty_log)
+
 #if __name__ == "__main__":
 #    # Check if running with mcp dev command
 #    print("STARTING")
@@ -678,6 +785,7 @@ def debug_error(error: str) -> list[base.Message]:
 #        mcp.run()  # Run without transport for dev server
 #    else:
 #        mcp.run(transport="stdio")  # Run with stdio for direct execution
+
 
 
 if __name__ == "__main__":
