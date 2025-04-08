@@ -1,0 +1,3 @@
+2025-04-07 00:24:39,021 - INFO -             <module>() Configuring Gemini API...
+2025-04-07 00:24:39,022 - INFO -             <module>() Gemini API configured successfully
+2025-04-07 00:24:39,023 - DEBUG -             __init__() Using proactor: IocpProactor
