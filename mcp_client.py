@@ -11,6 +11,7 @@ import logging
 import sys
 from datetime import datetime
 from config import Config
+import time
 
 # Configure logging at the start of your file, after the imports
 logging.basicConfig(
@@ -107,6 +108,7 @@ async def main():
                 logging.info("Session created, initializing...")
                 await math_session.initialize()
                 await gmail_session.initialize()
+                #time.sleep(0.5)
                 
                 # Get available tools
                 logging.info("Requesting tool list...")

@@ -31,6 +31,96 @@ logging.basicConfig(
 mcp = FastMCP("Calculator")
 
 # DEFINE TOOLS
+@mcp.tool()
+def determine_datatype(value: str) -> dict:
+    """
+    Determines the possible data type(s) of a given input string value.
+    Returns a dictionary with type information and validation results.
+    """
+    print("CALLED: determine_datatype(value: str) -> dict:")
+    
+    type_info = {
+        "possible_types": [],
+        "details": {},
+        "primary_type": None
+    }
+    
+    # Check for None/null
+    if value.lower() in ('none', 'null'):
+        type_info["possible_types"].append("NoneType")
+        type_info["primary_type"] = "NoneType"
+        return type_info
+    
+    # Check for boolean
+    if value.lower() in ('true', 'false'):
+        type_info["possible_types"].append("bool")
+        type_info["details"]["bool"] = value.lower() == 'true'
+        type_info["primary_type"] = "bool"
+        return type_info
+    
+    # Check for integer
+    try:
+        int_val = int(value)
+        type_info["possible_types"].append("int")
+        type_info["details"]["int"] = int_val
+    except ValueError:
+        pass
+    
+    # Check for float
+    try:
+        float_val = float(value)
+        type_info["possible_types"].append("float")
+        type_info["details"]["float"] = float_val
+    except ValueError:
+        pass
+    
+    # Check for list/array (if string starts and ends with brackets)
+    if value.strip().startswith('[') and value.strip().endswith(']'):
+        try:
+            import ast
+            list_val = ast.literal_eval(value)
+            if isinstance(list_val, list):
+                type_info["possible_types"].append("list")
+                type_info["details"]["list"] = {
+                    "length": len(list_val),
+                    "element_types": [type(elem).__name__ for elem in list_val]
+                }
+        except (ValueError, SyntaxError):
+            pass
+    
+    # Check for dict (if string starts and ends with braces)
+    if value.strip().startswith('{') and value.strip().endswith('}'):
+        try:
+            import ast
+            dict_val = ast.literal_eval(value)
+            if isinstance(dict_val, dict):
+                type_info["possible_types"].append("dict")
+                type_info["details"]["dict"] = {
+                    "length": len(dict_val),
+                    "key_types": [type(k).__name__ for k in dict_val.keys()],
+                    "value_types": [type(v).__name__ for v in dict_val.values()]
+                }
+        except (ValueError, SyntaxError):
+            pass
+    
+    # Check for string (always possible since input is string)
+    type_info["possible_types"].append("str")
+    type_info["details"]["str"] = {
+        "length": len(value),
+        "is_numeric": value.isnumeric(),
+        "is_alpha": value.isalpha(),
+        "is_alphanumeric": value.isalnum()
+    }
+    
+    # Determine primary type based on most specific match
+    if not type_info["primary_type"]:
+        type_hierarchy = ["int", "float", "list", "dict", "str"]
+        for t in type_hierarchy:
+            if t in type_info["possible_types"]:
+                type_info["primary_type"] = t
+                break
+    
+    return type_info
 
 #addition tool
 @mcp.tool()
