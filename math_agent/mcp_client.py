@@ -218,8 +218,23 @@ async def main():
 
                     if response_text.startswith("FUNCTION_CALL:"):
                         _, function_info = response_text.split(":", 1)
-                        parts = [p.strip() for p in function_info.split("|")]
-                        func_name, params = parts[0], parts[1:]
+                            # Special handling for function calls with HTML content
+                        if '<!DOCTYPE html>' in function_info:
+                            # Split only up to the HTML content
+                            html_start = function_info.find('<!DOCTYPE html>')
+                            pre_html = function_info[:html_start].strip()
+                            html_content = function_info[html_start:]
+                            
+                            # Split the non-HTML part
+                            pre_html_parts = [p.strip() for p in pre_html.split('|')]
+                            func_name = pre_html_parts[0]
+                            params = pre_html_parts[1:] + [html_content]  # Add HTML content as the last parameter
+                        else:
+                            # Regular parameter handling
+                            parts = [p.strip() for p in function_info.split("|")]
+                            func_name, params = parts[0], parts[1:]
+                        #parts = [p.strip() for p in function_info.split("|")]
+                        #func_name, params = parts[0], parts[1:]
                         
                         logging.info(f"\nDEBUG: Raw function info: {function_info}")
                         logging.info(f"DEBUG: Split parts: {parts}")
