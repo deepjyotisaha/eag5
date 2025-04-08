@@ -261,10 +261,11 @@ async def main():
                             schema_properties = tool.inputSchema.get('properties', {})
                             logging.info(f"DEBUG: Schema properties: {schema_properties}")
 
+                            # Convert parameters based on schema
                             for param_name, param_info in schema_properties.items():
-                                if not params:  # Check if we have enough parameters
-                                    raise ValueError(f"Not enough parameters provided for {func_name}")
-                                    
+                                if param_name not in params:
+                                    raise ValueError(f"Missing required parameter: {param_name}")
+                                
                                 value = params.pop(0)  # Get and remove the first parameter
                                 param_type = param_info.get('type', 'string')
                                 
@@ -286,14 +287,12 @@ async def main():
                             logging.info(f"DEBUG: Final arguments: {arguments}")
                             logging.info(f"DEBUG: Calling tool {func_name}")
                             
-                            #result = await tools.server_session.call_tool(func_name, arguments=arguments)
+                            # Execute the tool with converted arguments
                             result = await session.call_tool(func_name, arguments=arguments)
                             logging.info(f"DEBUG: Raw result: {result}")
                             
-                            # Get the full result content
+                            # Process result
                             if hasattr(result, 'content'):
-                                logging.info(f"DEBUG: Result has content attribute")
-                                # Handle multiple content items
                                 if isinstance(result.content, list):
                                     iteration_result = [
                                         item.text if hasattr(item, 'text') else str(item)
@@ -302,7 +301,6 @@ async def main():
                                 else:
                                     iteration_result = str(result.content)
                             else:
-                                logging.info(f"DEBUG: Result has no content attribute")
                                 iteration_result = str(result)
                                 
                             logging.info(f"DEBUG: Final iteration result: {iteration_result}")

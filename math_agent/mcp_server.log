@@ -1,63 +1,63 @@
-2025-04-08 18:47:24,865 - DEBUG -             __init__() Initializing server 'Calculator'
-2025-04-08 18:47:24,865 - DEBUG -            decorator() Registering handler for ListToolsRequest
-2025-04-08 18:47:24,865 - DEBUG -            decorator() Registering handler for CallToolRequest
-2025-04-08 18:47:24,865 - DEBUG -            decorator() Registering handler for ListResourcesRequest
-2025-04-08 18:47:24,865 - DEBUG -            decorator() Registering handler for ReadResourceRequest
-2025-04-08 18:47:24,865 - DEBUG -            decorator() Registering handler for PromptListRequest
-2025-04-08 18:47:24,865 - DEBUG -            decorator() Registering handler for GetPromptRequest
-2025-04-08 18:47:24,865 - DEBUG -            decorator() Registering handler for ListResourceTemplatesRequest
-2025-04-08 18:47:24,898 - DEBUG -             __init__() Using proactor: IocpProactor
-2025-04-08 18:47:24,909 - DEBUG -                  run() Received message: root=InitializedNotification(method='notifications/initialized', params=None, jsonrpc='2.0')
-2025-04-08 18:47:26,361 - DEBUG -                  run() Received message: <mcp.shared.session.RequestResponder object at 0x0000021E8D0B3110>
-2025-04-08 18:47:26,362 - INFO -      _handle_request() Processing request of type ListToolsRequest
-2025-04-08 18:47:26,362 - DEBUG -      _handle_request() Dispatching request of type ListToolsRequest
-2025-04-08 18:47:26,365 - DEBUG -      _handle_request() Response sent
-2025-04-08 18:47:30,929 - DEBUG -                  run() Received message: <mcp.shared.session.RequestResponder object at 0x0000021E8D0B2710>
-2025-04-08 18:47:30,929 - INFO -      _handle_request() Processing request of type CallToolRequest
-2025-04-08 18:47:30,929 - DEBUG -      _handle_request() Dispatching request of type CallToolRequest
-2025-04-08 18:47:30,931 - DEBUG -      _handle_request() Response sent
-2025-04-08 18:47:32,212 - DEBUG -                  run() Received message: <mcp.shared.session.RequestResponder object at 0x0000021E8C76EC40>
-2025-04-08 18:47:32,213 - INFO -      _handle_request() Processing request of type CallToolRequest
-2025-04-08 18:47:32,213 - DEBUG -      _handle_request() Dispatching request of type CallToolRequest
-2025-04-08 18:47:32,214 - DEBUG -      _handle_request() Response sent
-2025-04-08 18:47:33,219 - DEBUG -                  run() Received message: <mcp.shared.session.RequestResponder object at 0x0000021E8D05C9D0>
-2025-04-08 18:47:33,219 - INFO -      _handle_request() Processing request of type CallToolRequest
-2025-04-08 18:47:33,220 - DEBUG -      _handle_request() Dispatching request of type CallToolRequest
-2025-04-08 18:47:33,838 - INFO -           open_paint() Paint window found, verifying UI elements...
-2025-04-08 18:47:34,345 - INFO -           open_paint() Canvas element found and verified
-2025-04-08 18:47:34,348 - INFO -           open_paint() Canvas dimensions: (L0, T23, R0, B23)
-2025-04-08 18:47:34,350 - INFO -           open_paint() 
+2025-04-08 20:20:14,987 - DEBUG -             __init__() Initializing server 'Calculator'
+2025-04-08 20:20:14,987 - DEBUG -            decorator() Registering handler for ListToolsRequest
+2025-04-08 20:20:14,988 - DEBUG -            decorator() Registering handler for CallToolRequest
+2025-04-08 20:20:14,988 - DEBUG -            decorator() Registering handler for ListResourcesRequest
+2025-04-08 20:20:14,988 - DEBUG -            decorator() Registering handler for ReadResourceRequest
+2025-04-08 20:20:14,988 - DEBUG -            decorator() Registering handler for PromptListRequest
+2025-04-08 20:20:14,988 - DEBUG -            decorator() Registering handler for GetPromptRequest
+2025-04-08 20:20:14,988 - DEBUG -            decorator() Registering handler for ListResourceTemplatesRequest
+2025-04-08 20:20:15,050 - DEBUG -             __init__() Using proactor: IocpProactor
+2025-04-08 20:20:15,064 - DEBUG -                  run() Received message: root=InitializedNotification(method='notifications/initialized', params=None, jsonrpc='2.0')
+2025-04-08 20:20:16,925 - DEBUG -                  run() Received message: <mcp.shared.session.RequestResponder object at 0x0000018DC8B93110>
+2025-04-08 20:20:16,926 - INFO -      _handle_request() Processing request of type ListToolsRequest
+2025-04-08 20:20:16,926 - DEBUG -      _handle_request() Dispatching request of type ListToolsRequest
+2025-04-08 20:20:16,928 - DEBUG -      _handle_request() Response sent
+2025-04-08 20:20:22,274 - DEBUG -                  run() Received message: <mcp.shared.session.RequestResponder object at 0x0000018DC8B92710>
+2025-04-08 20:20:22,275 - INFO -      _handle_request() Processing request of type CallToolRequest
+2025-04-08 20:20:22,275 - DEBUG -      _handle_request() Dispatching request of type CallToolRequest
+2025-04-08 20:20:22,277 - DEBUG -      _handle_request() Response sent
+2025-04-08 20:20:23,591 - DEBUG -                  run() Received message: <mcp.shared.session.RequestResponder object at 0x0000018DC822EC40>
+2025-04-08 20:20:23,592 - INFO -      _handle_request() Processing request of type CallToolRequest
+2025-04-08 20:20:23,592 - DEBUG -      _handle_request() Dispatching request of type CallToolRequest
+2025-04-08 20:20:23,593 - DEBUG -      _handle_request() Response sent
+2025-04-08 20:20:24,579 - DEBUG -                  run() Received message: <mcp.shared.session.RequestResponder object at 0x0000018DC8B3C9D0>
+2025-04-08 20:20:24,579 - INFO -      _handle_request() Processing request of type CallToolRequest
+2025-04-08 20:20:24,579 - DEBUG -      _handle_request() Dispatching request of type CallToolRequest
+2025-04-08 20:20:25,992 - INFO -           open_paint() Paint window found, verifying UI elements...
+2025-04-08 20:20:26,504 - INFO -           open_paint() Canvas element found and verified
+2025-04-08 20:20:26,511 - INFO -           open_paint() Canvas dimensions: (L0, T23, R0, B23)
+2025-04-08 20:20:26,517 - INFO -           open_paint() 
 ==================== Display Configuration ====================
-2025-04-08 18:47:34,350 - INFO -           open_paint() Total number of monitors: 1
-2025-04-08 18:47:34,860 - INFO -           open_paint() Window successfully maximized
-2025-04-08 18:47:35,574 - INFO -           open_paint() UI elements verified and accessible
-2025-04-08 18:47:36,575 - INFO -           open_paint() Paint initialization complete and verified
-2025-04-08 18:47:36,576 - DEBUG -      _handle_request() Response sent
-2025-04-08 18:47:37,618 - DEBUG -                  run() Received message: <mcp.shared.session.RequestResponder object at 0x0000021E8CFF3BF0>
-2025-04-08 18:47:37,619 - INFO -      _handle_request() Processing request of type CallToolRequest
-2025-04-08 18:47:37,619 - DEBUG -      _handle_request() Dispatching request of type CallToolRequest
-2025-04-08 18:47:37,619 - INFO - get_screen_canvas_dimensions() 
+2025-04-08 20:20:26,517 - INFO -           open_paint() Total number of monitors: 1
+2025-04-08 20:20:27,034 - INFO -           open_paint() Window successfully maximized
+2025-04-08 20:20:27,950 - INFO -           open_paint() UI elements verified and accessible
+2025-04-08 20:20:28,952 - INFO -           open_paint() Paint initialization complete and verified
+2025-04-08 20:20:28,953 - DEBUG -      _handle_request() Response sent
+2025-04-08 20:20:30,134 - DEBUG -                  run() Received message: <mcp.shared.session.RequestResponder object at 0x0000018DC8AD31D0>
+2025-04-08 20:20:30,134 - INFO -      _handle_request() Processing request of type CallToolRequest
+2025-04-08 20:20:30,134 - DEBUG -      _handle_request() Dispatching request of type CallToolRequest
+2025-04-08 20:20:30,135 - INFO - get_screen_canvas_dimensions() 
 ==================== Display Configuration ====================
-2025-04-08 18:47:37,619 - INFO - get_screen_canvas_dimensions() Total number of monitors: 1
-2025-04-08 18:47:37,619 - INFO - get_screen_canvas_dimensions() Primary Monitor Resolution: 1920x1080
-2025-04-08 18:47:37,620 - DEBUG -      _handle_request() Response sent
-2025-04-08 18:47:39,667 - DEBUG -                  run() Received message: <mcp.shared.session.RequestResponder object at 0x0000021E8D148270>
-2025-04-08 18:47:39,668 - INFO -      _handle_request() Processing request of type CallToolRequest
-2025-04-08 18:47:39,668 - DEBUG -      _handle_request() Dispatching request of type CallToolRequest
-2025-04-08 18:47:39,668 - INFO -       draw_rectangle() Starting rectangle drawing operation from (472,297) to (1462,889)
-2025-04-08 18:47:39,676 - INFO -       draw_rectangle() Paint window rectangle: (-8, -8, 1928, 1040)
-2025-04-08 18:47:39,676 - INFO -       draw_rectangle() Clicking rectangle tool at (532, 82)
-2025-04-08 18:47:41,813 - INFO -       draw_rectangle() Rectangle drawing completed
-2025-04-08 18:47:41,815 - DEBUG -      _handle_request() Response sent
-2025-04-08 18:47:44,020 - DEBUG -                  run() Received message: <mcp.shared.session.RequestResponder object at 0x0000021E8D03EF10>
-2025-04-08 18:47:44,021 - INFO -      _handle_request() Processing request of type CallToolRequest
-2025-04-08 18:47:44,021 - DEBUG -      _handle_request() Dispatching request of type CallToolRequest
-2025-04-08 18:47:44,022 - INFO -    add_text_in_paint() Expected: Starting text addition operation: '7.59982224609308e+33' at (572, 447) with box size (790, 100)
-2025-04-08 18:47:44,022 - INFO -    add_text_in_paint() Actual: Starting text addition operation: '7.59982224609308e+33' at (572, 447) with box size (790, 100)
-2025-04-08 18:47:44,035 - INFO -    add_text_in_paint() Paint window rectangle: (-8, -8, 1928, 1040)
-2025-04-08 18:47:44,036 - INFO -    add_text_in_paint() Switching to selection tool
-2025-04-08 18:47:44,554 - INFO -    add_text_in_paint() Selecting Text tool
-2025-04-08 18:47:46,696 - INFO -    add_text_in_paint() Creating text box
-2025-04-08 18:47:50,095 - INFO -    add_text_in_paint() Typing text: 7.59982224609308e+33
-2025-04-08 18:47:54,095 - INFO -    add_text_in_paint() Text addition completed
-2025-04-08 18:47:54,096 - DEBUG -      _handle_request() Response sent
+2025-04-08 20:20:30,135 - INFO - get_screen_canvas_dimensions() Total number of monitors: 1
+2025-04-08 20:20:30,135 - INFO - get_screen_canvas_dimensions() Primary Monitor Resolution: 1920x1080
+2025-04-08 20:20:30,136 - DEBUG -      _handle_request() Response sent
+2025-04-08 20:20:31,900 - DEBUG -                  run() Received message: <mcp.shared.session.RequestResponder object at 0x0000018DC8C285A0>
+2025-04-08 20:20:31,901 - INFO -      _handle_request() Processing request of type CallToolRequest
+2025-04-08 20:20:31,901 - DEBUG -      _handle_request() Dispatching request of type CallToolRequest
+2025-04-08 20:20:31,901 - INFO -       draw_rectangle() Starting rectangle drawing operation from (462,287) to (1472,909)
+2025-04-08 20:20:31,907 - INFO -       draw_rectangle() Paint window rectangle: (-8, -8, 1928, 1040)
+2025-04-08 20:20:31,907 - INFO -       draw_rectangle() Clicking rectangle tool at (532, 82)
+2025-04-08 20:20:34,045 - INFO -       draw_rectangle() Rectangle drawing completed
+2025-04-08 20:20:34,046 - DEBUG -      _handle_request() Response sent
+2025-04-08 20:20:36,083 - DEBUG -                  run() Received message: <mcp.shared.session.RequestResponder object at 0x0000018DC8C28490>
+2025-04-08 20:20:36,083 - INFO -      _handle_request() Processing request of type CallToolRequest
+2025-04-08 20:20:36,083 - DEBUG -      _handle_request() Dispatching request of type CallToolRequest
+2025-04-08 20:20:36,084 - INFO -    add_text_in_paint() Expected: Starting text addition operation: '7.59982224609308e+33' at (567, 550) with box size (830, 100)
+2025-04-08 20:20:36,084 - INFO -    add_text_in_paint() Actual: Starting text addition operation: '7.59982224609308e+33' at (567, 550) with box size (830, 100)
+2025-04-08 20:20:36,095 - INFO -    add_text_in_paint() Paint window rectangle: (-8, -8, 1928, 1040)
+2025-04-08 20:20:36,095 - INFO -    add_text_in_paint() Switching to selection tool
+2025-04-08 20:20:36,615 - INFO -    add_text_in_paint() Selecting Text tool
+2025-04-08 20:20:38,755 - INFO -    add_text_in_paint() Creating text box
+2025-04-08 20:20:42,169 - INFO -    add_text_in_paint() Typing text: 7.59982224609308e+33
+2025-04-08 20:20:46,133 - INFO -    add_text_in_paint() Text addition completed
+2025-04-08 20:20:46,134 - DEBUG -      _handle_request() Response sent

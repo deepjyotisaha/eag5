@@ -271,103 +271,42 @@ async def main():
                                 logging.info(f"DEBUG: Parameters: {parameters}")
                                 logging.info(f"DEBUG: Reasoning tag: {reasoning_tag}")
                                 logging.info(f"DEBUG: Reasoning: {reasoning}")
-
-                                try:
-                                    # Find the matching tool to get its input schema
-                                    tool = next((t for t in tools if t.name == func_name), None)
-                                    if not tool:
-                                        logging.info(f"DEBUG: Available tools: {[t.name for t in tools]}")
-                                        raise ValueError(f"Unknown tool: {func_name}")
-
-                                    logging.info(f"DEBUG: Found tool: {tool.name}")
-                                    logging.info(f"DEBUG: Tool schema: {tool.inputSchema}")
-
-                                    # Get the correct session from the tool
-                                    session = tool.server_session
-                                    if not session:
-                                        raise ValueError(f"No session found for tool: {func_name}")
-
-                                    # Prepare arguments according to the tool's input schema
-                                    arguments = {}
-                                    schema_properties = tool.inputSchema.get('properties', {})
-                                    logging.info(f"DEBUG: Schema properties: {schema_properties}")
-
-                                    # Convert parameters dictionary to a list of values
-                                    params = list(parameters.values())
-                                    logging.info(f"DEBUG: Parameters list: {params}")
-
-                                    for param_name, param_info in schema_properties.items():
-                                        if not params:  # Check if we have enough parameters
-                                            raise ValueError(f"Not enough parameters provided for {func_name}")
-                                        
-                                        value = params.pop(0)  # Get and remove the first parameter
-                                        param_type = param_info.get('type', 'string')
-
-                                        logging.info(f"DEBUG: Converting parameter {param_name} with value {value} to type {param_type}")
-                                        # Convert the value to the correct type based on the schema
-                                        if param_type == 'integer':
-                                            arguments[param_name] = int(value)
-                                        elif param_type == 'number':
-                                            arguments[param_name] = float(value)
-                                        elif param_type == 'array':
-                                            # Handle array input
-                                            if isinstance(value, str):
-                                                # If it's a string, parse it
-                                                value = value.strip('[]').split(',')
-                                                arguments[param_name] = [int(x.strip()) for x in value]
-                                            elif isinstance(value, list):
-                                                # If it's a list, check if it's nested
-                                                if len(value) > 0 and isinstance(value[0], list):
-                                                    # If nested, use the first list
-                                                    arguments[param_name] = value[0]
-                                                else:
-                                                    # If not nested, use as is
-                                                    arguments[param_name] = value
-                                            else:
-                                                # If it's neither string nor list, raise error
-                                                raise ValueError(f"Invalid array parameter: {value}")
-
-                                            logging.info(f"DEBUG: Final array value: {arguments[param_name]}")
-                                        else:
-                                            arguments[param_name] = str(value)
-
-                                    logging.info(f"DEBUG: Final arguments: {arguments}")
-                                    logging.info(f"DEBUG: Calling tool {func_name}")
-
-                                    # Execute the tool with our converted arguments
-                                    result = await session.call_tool(func_name, arguments=arguments)
-                                    logging.info(f"DEBUG: Raw result: {result}")
+                                
+                                # Find the matching tool
+                                tool = next((t for t in tools if t.name == func_name), None)
+                                if not tool:
+                                    raise ValueError(f"Unknown tool: {func_name}")
                                     
-                                    # Process result
-                                    if hasattr(result, 'content'):
-                                        if isinstance(result.content, list):
-                                            iteration_result = [
-                                                item.text if hasattr(item, 'text') else str(item)
-                                                for item in result.content
-                                            ]
-                                        else:
-                                            iteration_result = str(result.content)
+                                # Get the correct session
+                                session = tool.server_session
+                                if not session:
+                                    raise ValueError(f"No session found for tool: {func_name}")
+                                    
+                                # Execute the tool
+                                result = await session.call_tool(func_name, arguments=parameters)
+                                
+                                # Process result
+                                if hasattr(result, 'content'):
+                                    if isinstance(result.content, list):
+                                        iteration_result = [
+                                            item.text if hasattr(item, 'text') else str(item)
+                                            for item in result.content
+                                        ]
                                     else:
-                                        iteration_result = str(result)
-                                        
-                                    # Store execution details
-                                    execution_history.steps.append({
-                                        "step_number": len(execution_history.steps) + 1,
-                                        "function": func_name,
-                                        "parameters": parameters,
-                                        "reasoning_tag": reasoning_tag,
-                                        "reasoning": reasoning,
-                                        "result": iteration_result
-                                    })
-
-                                except Exception as e:
-                                    logging.error(f"DEBUG: Error details: {str(e)}")
-                                    logging.error(f"DEBUG: Error type: {type(e)}")
-                                    import traceback
-                                    traceback.print_exc()
-                                    iteration_response.append(f"Error in iteration {iteration + 1}: {str(e)}")
-                                    break
-
+                                        iteration_result = str(result.content)
+                                else:
+                                    iteration_result = str(result)
+                                    
+                                # Store execution details
+                                execution_history.steps.append({
+                                    "step_number": len(execution_history.steps) + 1,
+                                    "function": func_name,
+                                    "parameters": parameters,
+                                    "reasoning_tag": reasoning_tag,
+                                    "reasoning": reasoning,
+                                    "result": iteration_result
+                                })
+                                
                             elif response_type == "final_answer":
                                 logging.info("\n=== Agent Execution Complete ===")
                                 logging.info(f"Final Result: {response_json.get('result')}")
